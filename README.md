@@ -22,6 +22,7 @@ Modifications
 A new category of commands exist under the label "Z Researcher". A few of them are as follows:
 * DoS "duration" "times/seconds/clocks" "msg" ( "args" )
 * blocktimeoffset
+* headertimeoffset
 * bucketadd "address" "port"
 * bucketclear
 * bucketinfo
