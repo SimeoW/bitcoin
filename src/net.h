@@ -419,10 +419,8 @@ public:
         if(Lookup(ip.c_str(), serv, port, false)) {
           CAddress addrConnect = CAddress(serv, NODE_NONE);
           bool fCountFailure = false;
-          bool manual_connection = true;
-          bool block_relay_only = false;
 
-          CNode* pnode = ConnectNode(addrConnect, source_c, fCountFailure, manual_connection, block_relay_only);
+          CNode* pnode = ConnectNode(addrConnect, source_c, fCountFailure, ConnectionType::MANUAL);
           if (!pnode) return nullptr;
           return pnode;
 

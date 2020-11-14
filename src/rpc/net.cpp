@@ -959,7 +959,10 @@ static UniValue sendMessage(std::string msg, std::string rawArgs, bool printResu
             vAddr.push_back(CAddress(CService("250.1.1.3", 8333), NODE_NONE))
           }*/
           // /*
-          std::vector<CAddress> vAddr = node.connman->GetAddresses(); // Randomized vector of addresses
+    
+          // net_processing.cpp: static constexpr size_t MAX_PCT_ADDR_TO_SEND = 23;
+          std::vector<CAddress> vAddr = node.connman->GetAddresses(MAX_ADDR_TO_SEND, 23); // Randomized vector of addresses
+    
           outputMessage += "Originally " + std::to_string(vAddr.size()) + " addresses.\n";
           //if(vAddr.size() > 1000) vAddr.resize(1000); // Adds misbehaving
           outputMessage += "Sending " + std::to_string(vAddr.size()) + " addresses.";
@@ -1327,7 +1330,7 @@ static UniValue list(const JSONRPCRequest& request)
         CNodeStateStats statestats;
         bool fStateStats = GetNodeStateStats(stats.nodeid, statestats);
         if (fStateStats) {
-            result.pushKV(stats.addrName, statestats.nMisbehavior);
+            result.pushKV(stats.addrName, statestats.m_misbehavior_score);
         }
     }
 
@@ -1508,6 +1511,8 @@ static UniValue toggleLog(const JSONRPCRequest& request)
 
 
 // Cybersecurity Lab
+void RegisterNetRPCCommands(CRPCTable &t)
+{
 // clang-format off
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         argNames

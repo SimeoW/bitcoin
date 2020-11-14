@@ -1376,6 +1376,8 @@ static UniValue mine(const JSONRPCRequest& request)
     // return generateBlocks(mempool, coinbase_script, nGenerate, nMaxTries);
 }
 
+void RegisterMiningRPCCommands(CRPCTable &t)
+{
 // clang-format off
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         argNames

@@ -86,6 +86,10 @@ public:
     /** Process a single message from a peer. Public for fuzz testing */
     void ProcessMessage(CNode& pfrom, const std::string& msg_type, CDataStream& vRecv,
                         const std::chrono::microseconds time_received, const std::atomic<bool>& interruptMsgProc);
+    
+    /** Wrapper for ProcessMessage */
+    void _ProcessMessage(CNode& pfrom, const std::string& msg_type, CDataStream& vRecv,
+                        const std::chrono::microseconds time_received, const std::atomic<bool>& interruptMsgProc);
 
     /**
      * Increment peer's misbehavior score. If the new value >= DISCOURAGEMENT_THRESHOLD, mark the node

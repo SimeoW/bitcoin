@@ -1066,7 +1066,7 @@ void PeerManager::Misbehaving(const NodeId pnode, const int howmuch, const std::
     peer->m_misbehavior_score += howmuch;
     const std::string message_prefixed = message.empty() ? "" : (": " + message);
 
-    LogPrint(BCLog::RESEARCHER, "\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!n*** Node %d has been misbehaving! (\"%s\")! Misbehavior score = %d (%d added)", pnode, message_prefixed, state->m_misbehavior_score, howmuch); // Cybersecurity Lab
+    LogPrint(BCLog::RESEARCHER, "\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!n*** Node %d has been misbehaving! (\"%s\")! Misbehavior score = %d (%d added)", pnode, message_prefixed, peer->m_misbehavior_score, howmuch); // Cybersecurity Lab
 
     if (peer->m_misbehavior_score >= DISCOURAGEMENT_THRESHOLD && peer->m_misbehavior_score - howmuch < DISCOURAGEMENT_THRESHOLD) {
         LogPrint(BCLog::NET, "Misbehaving: peer=%d (%d -> %d) DISCOURAGE THRESHOLD EXCEEDED%s\n", pnode, peer->m_misbehavior_score - howmuch, peer->m_misbehavior_score, message_prefixed);
@@ -2283,9 +2283,9 @@ static void ProcessGetCFCheckPt(CNode& peer, CDataStream& vRecv, const CChainPar
     connman.PushMessage(&peer, std::move(msg));
 }
 
-void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDataStream& vRecv,
-                                         const std::chrono::microseconds time_received,
-                                         const std::atomic<bool>& interruptMsgProc);
+//void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDataStream& vRecv,
+//                                         const std::chrono::microseconds time_received,
+//                                         const std::atomic<bool>& interruptMsgProc);
 
 void PeerManager::_ProcessMessage(CNode& pfrom, const std::string& msg_type, CDataStream& vRecv,
                                          const std::chrono::microseconds time_received,
@@ -3783,7 +3783,7 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
   clock_t begin = clock();
 
   // Execute the real ProcessMessage protocol
-  _ProcessMessage(pfrom, msg_type, vRecv, time_received, interruptMsgProc);
+  PeerManager::_ProcessMessage(pfrom, msg_type, vRecv, time_received, interruptMsgProc);
 
   // Timer end
   clock_t end = clock();
@@ -3827,15 +3827,15 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
   if(elapsed_time == -1) elapsed_time = 0; // So that the results dont reset from the value
   if(vRecvSize == -1) vRecvSize = 0;
 
-  (connman->timePerMessage)[commandIndex]++;
+  (m_connman.timePerMessage)[commandIndex]++;
 
   // Avg, max of elapsed time
-  (connman->timePerMessage)[commandIndex + 1] += elapsed_time;
-  if(elapsed_time > (connman->timePerMessage)[commandIndex + 2]) (connman->timePerMessage)[commandIndex + 2] = elapsed_time;
+  (m_connman.timePerMessage)[commandIndex + 1] += elapsed_time;
+  if(elapsed_time > (m_connman.timePerMessage)[commandIndex + 2]) (m_connman.timePerMessage)[commandIndex + 2] = elapsed_time;
 
   // Avg, max of number of bytes
-  (connman->timePerMessage)[commandIndex + 3] += vRecvSize;
-  if(vRecvSize > (connman->timePerMessage)[commandIndex + 4]) (connman->timePerMessage)[commandIndex + 4] = vRecvSize;
+  (m_connman.timePerMessage)[commandIndex + 3] += vRecvSize;
+  if(vRecvSize > (m_connman.timePerMessage)[commandIndex + 4]) (m_connman.timePerMessage)[commandIndex + 4] = vRecvSize;
 
   LogPrint(BCLog::RESEARCHER, "\n*** Message ** addr=%s ** cmd=%s ** cycles=%f ** bytes=%f", pfrom.addr.ToString(), msg_type, elapsed_time, vRecvSize); // Cybersecurity Lab
   return;
@@ -4864,10 +4864,16 @@ static UniValue listallstats(const JSONRPCRequest& request)
     UniValue result(UniValue::VOBJ);
 
     node.connman->ForEachNode([&result](CNode* pnode) {
+
+        CNodeStateStats statestats;
+        bool fStateStats = GetNodeStateStats(pnode->GetId(), statestats);
+        if (fStateStats) {
+            result.pushKV("m_misbehavior_score", statestats.m_misbehavior_score);
+        }
+
         result.pushKV("Address", pnode->addr.ToString());
         result.pushKV("fCurrentlyConnected", State(pnode->GetId())->fCurrentlyConnected);
-        result.pushKV("nMisbehavior", State(pnode->GetId())->nMisbehavior);
-        result.pushKV("m_should_discourage", State(pnode->GetId())->m_should_discourage);
+        //result.pushKV("m_should_discourage", State(pnode->GetId())->m_should_discourage);
         result.pushKV("pindexBestKnownBlock", State(pnode->GetId())->pindexBestKnownBlock);
         result.pushKV("hashLastUnknownBlock", State(pnode->GetId())->hashLastUnknownBlock.GetHex());
         result.pushKV("pindexLastCommonBlock", State(pnode->GetId())->pindexLastCommonBlock);
@@ -4905,19 +4911,18 @@ static UniValue listallstats(const JSONRPCRequest& request)
 }
 
 // Cybersecurity Lab
+void RegisterNetProcessingRPCCommands(CRPCTable &t)
+{
 // clang-format off
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         argNames
   //  --------------------- ------------------------  -----------------------  ----------
-  { "z Researcher",          "listcmpct",              &listcmpct,                {} },
-  { "z Researcher",          "setcmpct",               &setcmpct,                 {} },
-  { "z Researcher",          "listallstats",           &listallstats,             {} },
+    { "z Researcher",          "listcmpct",              &listcmpct,                {} },
+    { "z Researcher",          "setcmpct",               &setcmpct,                 {} },
+    { "z Researcher",          "listallstats",           &listallstats,             {} },
 };
 // clang-format on
-
-// Cybersecurity Lab
-void RegisterNetProcessingRPCCommands(CRPCTable &t)
-{
-    for (unsigned int vcidx = 0; vcidx < ARRAYLEN(commands); vcidx++)
-        t.appendCommand(commands[vcidx].name, &commands[vcidx]);
+    for (const auto& c : commands) {
+        t.appendCommand(c.name, &c);
+    }
 }
