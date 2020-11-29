@@ -1070,8 +1070,14 @@ def init():
 		eclipse_fake_numpeers = int(input(f'How many FAKE connections would you like? '))
 		eclipse_real_numpeers = int(input(f'How many REAL connections would you like? '))
 		eclipse_drop_rate = float(input(f'What is the packet drop rate (0 to 1)? '))
-		maxConnections = eclipse_real_numpeers + eclipse_fake_numpeers
-		print(f'Total number of connections: {maxConnections}')
+		maxConnectionsValue = eclipse_real_numpeers + eclipse_fake_numpeers
+		try:
+			maxConnections = connectionSequence.index(maxConnectionsValue)
+		except:
+			connectionSequence = [maxConnectionsValue]
+			maxConnections = 0
+
+		print(f'Total number of connections: {maxConnectionsValue}')
 		waitForConnectionNum = True
 	else:
 		if len(connectionSequence) == 1:
