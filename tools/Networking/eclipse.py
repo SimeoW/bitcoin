@@ -15,9 +15,11 @@ import struct
 import sys
 import time
 
+if os.geteuid() != 0:
+	sys.exit("\nYou need to have root privileges to run this script.\nPlease try again, this time using 'sudo'. Exiting.\n")
 
 # Specify the attacker's genuine IP
-attacker_ip = '10.0.2.' + str(int(input('Attacker IP = 10.0.2.X, what is X? ')))
+attacker_ip = '\n10.0.2.' + str(int(input('Attacker IP = 10.0.2.X, what is X? ')))
 attacker_port = 8333
 
 # Specify the victim's IP, and port (8333 for Bitcoin)

@@ -17,12 +17,14 @@ import sys
 import time
 import datetime
 
+if os.geteuid() != 0:
+	sys.exit("\nYou need to have root privileges to run this script.\nPlease try again, this time using 'sudo'. Exiting.\n")
 
 # Specify the attacker's genuine IP
-attacker_ip = '10.0.2.15'
+attacker_ip = input('\nEnter attacker\'s IP address: ')
 
 # Specify the victim's IP, and port (8333 for Bitcoin)
-victim_ip = '10.0.2.5'
+victim_ip = input('Enter victim\'s IP address: ')
 victim_port = 8333
 
 # How many identities should run simultaneously
