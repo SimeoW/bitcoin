@@ -4700,9 +4700,9 @@ static CNetProcessingCleanup instance_of_cnetprocessingcleanup;
 
 
 // Cybersecurity Lab
-static UniValue listcmpct(const JSONRPCRequest& request)
+RPCHelpMan listcmpct()
 {
-    RPCHelpMan{"listcmpct",
+    return RPCHelpMan{"listcmpct",
                 "\nGet the sendcmpct status of each peer.\n",
                 {},
                 RPCResults{},
@@ -4710,8 +4710,8 @@ static UniValue listcmpct(const JSONRPCRequest& request)
                     HelpExampleCli("listcmpct", "")
             + HelpExampleRpc("listcmpct", "")
                 },
-            }.Check(request);
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     NodeContext& node = EnsureNodeContext(request.context);
     if(!node.connman)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
@@ -4743,21 +4743,24 @@ static UniValue listcmpct(const JSONRPCRequest& request)
     }*/
 
     return result;
+},
+    };
 }
 
 
+
 // Cybersecurity Lab
-static UniValue setcmpct(const JSONRPCRequest& request)
+RPCHelpMan setcmpct()
 {
-    RPCHelpMan{"setcmpct",
+    return RPCHelpMan{"setcmpct",
                 "\nSet the sendcmpct status of each peer.\n",
                 {},
                 RPCResults{},
                 RPCExamples{
                     HelpExampleCli("setcmpct", "[true or false, Use CMPCT],[1 or 2, Protocol version]")
                 },
-            }.Check(request);
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     NodeContext& node = EnsureNodeContext(request.context);
     if(!node.connman)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
@@ -4833,12 +4836,15 @@ static UniValue setcmpct(const JSONRPCRequest& request)
     });
 
     return result;
+},
+    };
 }
 
+
 // Cybersecurity Lab
-static UniValue listallstats(const JSONRPCRequest& request)
+RPCHelpMan listallstats()
 {
-    RPCHelpMan{"listallstats",
+    return RPCHelpMan{"listallstats",
                 "\nGet node stats.\n",
                 {},
                 RPCResults{},
@@ -4846,8 +4852,8 @@ static UniValue listallstats(const JSONRPCRequest& request)
                     HelpExampleCli("listallstats", "")
             + HelpExampleRpc("listallstats", "")
                 },
-            }.Check(request);
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     NodeContext& node = EnsureNodeContext(request.context);
     if(!node.connman)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
@@ -4867,7 +4873,7 @@ static UniValue listallstats(const JSONRPCRequest& request)
         }
 
         result.pushKV("Address", pnode->addr.ToString());
-        result.pushKV("fCurrentlyConnected", State(pnode->GetId())->fCurrentlyConnected);
+        //result.pushKV("fCurrentlyConnected", State(pnode->GetId())->fCurrentlyConnected);
         //result.pushKV("m_should_discourage", State(pnode->GetId())->m_should_discourage);
         result.pushKV("pindexBestKnownBlock", State(pnode->GetId())->pindexBestKnownBlock);
         result.pushKV("hashLastUnknownBlock", State(pnode->GetId())->hashLastUnknownBlock.GetHex());
@@ -4903,7 +4909,10 @@ static UniValue listallstats(const JSONRPCRequest& request)
     }*/
 
     return result;
+},
+    };
 }
+
 
 // Cybersecurity Lab
 void RegisterNetProcessingRPCCommands(CRPCTable &t)

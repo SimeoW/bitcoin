@@ -1207,9 +1207,9 @@ static RPCHelpMan estimaterawfee()
     };
 }
 
-static UniValue mine(const JSONRPCRequest& request)
+static RPCHelpMan mine()
 {
-            RPCHelpMan{"mine",
+    return RPCHelpMan{"mine",
                 "\nMine blocks immediately to a specified address (before the RPC call returns)\n",
                 {
                     {"duration", RPCArg::Type::STR, /* optional */"1000000", "Duration"},
@@ -1221,11 +1221,13 @@ static UniValue mine(const JSONRPCRequest& request)
                 RPCExamples{
             "\nMine for 1 million nonces to 1AiU47qqkHkfdVcq9sRu72NurAWeaJK3gc\n"
             + HelpExampleCli("mine", "1000000 times 0 1AiU47qqkHkfdVcq9sRu72NurAWeaJK3gc")
+            + "\nMine infinitely until the application closes\n"
+            + HelpExampleCli("mine", "0 seconds")
             + "If you are running the bitcoin core wallet, you can get a new address to send the newly generated bitcoin to with:\n"
             + HelpExampleCli("getnewaddress", "")
                 },
-            }.Check(request);
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     unsigned int duration = 1000000;
     if(!request.params[0].isNull()) {
       std::string durationStr = "1000000";
@@ -1280,8 +1282,20 @@ static UniValue mine(const JSONRPCRequest& request)
     int numHashes = 0;
     clock_t begin, end;
     bool blockFound = false;
-    if(unit == "time" || unit == "times") {
-    unsigned int nMaxTries = duration;
+
+    // Mine infinitely, until either all nonces have been exhaustively searched, a block is found, or a shutdown is requested
+    if(duration == 0) {
+        begin = clock(); // Start timer
+        while(true && pblock->nNonce < std::numeric_limits<uint32_t>::max() && !blockFound && !ShutdownRequested()) {
+          pblock->nNonce++;
+          //GetRandBytes((unsigned char*)&pblock->nNonce, sizeof(pblock->nNonce));
+          ++numHashes;
+          blockFound = CheckProofOfWork(pblock->GetHash(), pblock->nBits, Params().GetConsensus());
+        }
+        end = clock(); // End timer
+
+    } else if(unit == "time" || unit == "times") {
+      unsigned int nMaxTries = duration;
       if(delayBetweenNonces == 0) {
         begin = clock(); // Start timer
         while(nMaxTries > 0 && pblock->nNonce < std::numeric_limits<uint32_t>::max() && !blockFound && !ShutdownRequested()) {
@@ -1304,6 +1318,7 @@ static UniValue mine(const JSONRPCRequest& request)
         }
         end = clock(); // End timer
       }
+
     } else if(unit == "clock" || unit == "clocks") {
       if(delayBetweenNonces == 0) {
         begin = clock(); // Start timer
@@ -1325,6 +1340,7 @@ static UniValue mine(const JSONRPCRequest& request)
         }
         end = clock(); // End timer
       }
+
     } else if(unit == "second" || unit == "seconds") {
       unsigned int durationClocks = duration * CLOCKS_PER_SEC;
       if(delayBetweenNonces == 0) {
@@ -1347,6 +1363,7 @@ static UniValue mine(const JSONRPCRequest& request)
         }
         end = clock(); // End timer
       }
+      
     } else {
       result.pushKV("ERROR", "Unit of measurement unknown");
       return result;
@@ -1369,7 +1386,10 @@ static UniValue mine(const JSONRPCRequest& request)
 
     return result;
     // return generateBlocks(mempool, coinbase_script, nGenerate, nMaxTries);
+},
+    };
 }
+
 
 void RegisterMiningRPCCommands(CRPCTable &t)
 {

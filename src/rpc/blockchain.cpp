@@ -2461,9 +2461,9 @@ static RPCHelpMan dumptxoutset()
 }
 
 // Cybersecurity lab
-static UniValue blocktimeoffset(const JSONRPCRequest& request)
+static RPCHelpMan blocktimeoffset()
 {
-            RPCHelpMan{"blocktimeoffset",
+    return RPCHelpMan{"blocktimeoffset",
                 "\nReturns the time difference from the moment it was mined, to the moment it was received.\n",
                 {},
                 RPCResult{
@@ -2472,17 +2472,19 @@ static UniValue blocktimeoffset(const JSONRPCRequest& request)
                     HelpExampleCli("blocktimeoffset", "")
             + HelpExampleRpc("blocktimeoffset", "")
                 },
-            }.Check(request);
-
-    //LOCK(cs_main);
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     if(blockTimeOffset == INT_MIN) return NullUniValue;
     return blockTimeOffset;
+},
+    };
 }
 
+
 // Cybersecurity lab
-static UniValue headertimeoffset(const JSONRPCRequest& request)
+static RPCHelpMan headertimeoffset()
 {
-            RPCHelpMan{"headertimeoffset",
+    return RPCHelpMan{"headertimeoffset",
                 "\nReturns the time difference from the moment it was mined, to the moment it was received.\n",
                 {},
                 RPCResult{
@@ -2491,12 +2493,14 @@ static UniValue headertimeoffset(const JSONRPCRequest& request)
                     HelpExampleCli("headertimeoffset", "")
             + HelpExampleRpc("headertimeoffset", "")
                 },
-            }.Check(request);
-
-    //LOCK(cs_main);
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     if(headerTimeOffset == INT_MIN) return NullUniValue;
     return headerTimeOffset;
+},
+    };
 }
+
 
 void RegisterBlockchainRPCCommands(CRPCTable &t)
 {

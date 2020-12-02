@@ -1171,11 +1171,9 @@ static UniValue sendMessage(std::string msg, std::string rawArgs, bool printResu
 
 
 // Cybersecurity Lab
-static UniValue DoS(const JSONRPCRequest& request)
+static RPCHelpMan DoS()
 {
-    if (request.fHelp || request.params.size() < 3 || request.params.size() > 4)
-        throw std::runtime_error(
-            RPCHelpMan{"DoS",
+    return RPCHelpMan{"DoS",
                 "\nSend a message.\n",
                 {
                   {"duration", RPCArg::Type::STR, RPCArg::Optional::NO, "Duration"},
@@ -1190,8 +1188,8 @@ static UniValue DoS(const JSONRPCRequest& request)
                     HelpExampleCli("DoS", "5 seconds sendcmpct true,2") +
                     HelpExampleCli("DoS", "100 times [HEX CODE] [MESSAGE NAME]")
                 },
-            }.ToString());
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     NodeContext& node = EnsureNodeContext(request.context);
     if(!node.connman)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
@@ -1246,14 +1244,14 @@ static UniValue DoS(const JSONRPCRequest& request)
     std::stringstream output;
     output << "(" << msg << ") was sent " << std::to_string(count) << " times (" << std::to_string(elapsed_time) << " clocks)\nTotal time: " << std::to_string(elapsed_time) << " clocks";
     return  output.str();
+},
+    };
 }
 
 // Cybersecurity Lab
-static UniValue send(const JSONRPCRequest& request)
+static RPCHelpMan send()
 {
-    if (request.fHelp || request.params.size() == 0 || request.params.size() > 2)
-        throw std::runtime_error(
-            RPCHelpMan{"send",
+    return RPCHelpMan{"send",
                 "\nSend a message.\n",
                 {
                   {"msg", RPCArg::Type::STR, RPCArg::Optional::NO, "Message type"},
@@ -1288,8 +1286,8 @@ static UniValue send(const JSONRPCRequest& request)
                     HelpExampleCli("send", "blocktxn") +
                     HelpExampleCli("send", "[HEX CODE] [MESSAGE NAME]")
                 },
-            }.ToString());
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     NodeContext& node = EnsureNodeContext(request.context);
     if(!node.connman)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
@@ -1301,14 +1299,15 @@ static UniValue send(const JSONRPCRequest& request)
       rawArgs = "None";
     }
     return sendMessage(msg, rawArgs, true, node);
+},
+    };
 }
 
+
 // Cybersecurity Lab
-static UniValue list(const JSONRPCRequest& request)
+static RPCHelpMan list()
 {
-    if (request.fHelp || request.params.size() != 0)
-        throw std::runtime_error(
-            RPCHelpMan{"list",
+    return RPCHelpMan{"list",
                 "\nGet the misbehavior score for each peer.\n",
                 {},
                 RPCResults{},
@@ -1316,8 +1315,8 @@ static UniValue list(const JSONRPCRequest& request)
                     HelpExampleCli("list", "")
             + HelpExampleRpc("list", "")
                 },
-            }.ToString());
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     NodeContext& node = EnsureNodeContext(request.context);
     if(!node.connman)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
@@ -1335,14 +1334,15 @@ static UniValue list(const JSONRPCRequest& request)
     }
 
     return result;
+},
+    };
 }
 
+
 // Cybersecurity Lab
-static UniValue count(const JSONRPCRequest& request)
+static RPCHelpMan count()
 {
-    if (request.fHelp || request.params.size() != 0)
-        throw std::runtime_error(
-            RPCHelpMan{"count",
+    return RPCHelpMan{"count",
                 "\nCount the number of peers.\n",
                 {},
                 RPCResults{},
@@ -1350,8 +1350,8 @@ static UniValue count(const JSONRPCRequest& request)
                     HelpExampleCli("count", "")
             + HelpExampleRpc("count", "")
                 },
-            }.ToString());
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     NodeContext& node = EnsureNodeContext(request.context);
     if(!node.connman)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
@@ -1363,26 +1363,27 @@ static UniValue count(const JSONRPCRequest& request)
     result.pushKV("Number of peer connections", vstats.size());
 
     return result;
+},
+    };
 }
 
+
 // Cybersecurity Lab
-static UniValue forcerealfake(const JSONRPCRequest& request)
+static RPCHelpMan forcerealfake()
 {
-    if (request.fHelp || request.params.size() != 2)
-        throw std::runtime_error(
-            RPCHelpMan{"forcerealfake",
+    return RPCHelpMan{"forcerealfake",
                 "\nOnly allow X real connections, and Y fake connections. Disconnects if there are too many.\n",
                 {
-                  {"real", RPCArg::Type::STR, RPCArg::Optional::NO, "Number of real IPs to have"},
-                  {"fake", RPCArg::Type::STR, RPCArg::Optional::NO, "Number of IP that start with \"10.0\" to have"},
+                  {"numReal", RPCArg::Type::STR, RPCArg::Optional::NO, "Number of real IPs to have"},
+                  {"numFake", RPCArg::Type::STR, RPCArg::Optional::NO, "Number of IP that start with \"10.0\" to have"},
                 },
                 RPCResults{},
                 RPCExamples{
                     HelpExampleCli("forcerealfake", "")
             + HelpExampleRpc("forcerealfake", "")
                 },
-            }.ToString());
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     NodeContext& node = EnsureNodeContext(request.context);
     if(!node.connman)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
@@ -1447,24 +1448,15 @@ static UniValue forcerealfake(const JSONRPCRequest& request)
     result.pushKV("At correct peer count", (real == 0 && fake == 0));
 
     return result;
+},
+    };
 }
 
 
-/*bool success = node.connman->DisconnectNode(ipAddress + ":" + std::to_string(port));
-
-if(!success) {
-  result.pushKV(ipAddress + ":" + std::to_string(port), "Failed");
-  return result;
-} else {
-  result.pushKV(ipAddress + ":" + std::to_string(port), "Successful");
-}*/
-
 // Cybersecurity Lab
-static UniValue toggleLog(const JSONRPCRequest& request)
+static RPCHelpMan log()
 {
-    if (request.fHelp || request.params.size() > 1)
-        throw std::runtime_error(
-            RPCHelpMan{"log",
+    return RPCHelpMan{"log",
                 "\nToggle the logging settings for a specific category.\n",
                 {
                   {"category", RPCArg::Type::STR, RPCArg::Optional::NO, "Logging category"},
@@ -1474,8 +1466,8 @@ static UniValue toggleLog(const JSONRPCRequest& request)
                     HelpExampleCli("log", "all")
             + HelpExampleRpc("log", "all")
                 },
-            }.ToString());
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     std::string parameter = request.params.size() == 0 ? "all" : request.params[0].get_str();
 
     bool category_found = false, category_active = false;
@@ -1507,6 +1499,8 @@ static UniValue toggleLog(const JSONRPCRequest& request)
       result.pushKV(category.category, category.active);
     }
     return result;
+},
+    };
 }
 
 
@@ -1534,9 +1528,8 @@ static const CRPCCommand commands[] =
     { "z Researcher",       "send",                   &send,                   {"msg", "args"} },
     { "z Researcher",       "DoS",                    &DoS,                    {"duration", "times/seconds/clocks", "msg", "args"} },
     { "z Researcher",       "list",                   &list,                   {} },
-    { "z Researcher",       "ls",                     &list,                   {} },
     { "z Researcher",       "count",                  &count,                  {} },
-    { "z Researcher",       "log",                    &toggleLog,              {"category"} },
+    { "z Researcher",       "log",                    &log,                    {"category"} },
     { "z Researcher",       "forcerealfake",          &forcerealfake,          {"numReal", "numFake"} },
 };
 // clang-format on

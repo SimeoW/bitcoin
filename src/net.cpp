@@ -3063,14 +3063,11 @@ uint64_t CConnman::CalculateKeyedNetGroup(const CAddress& ad) const
     return GetDeterministicRandomizer(RANDOMIZER_ID_NETGROUP).Write(vchNetGroup.data(), vchNetGroup.size()).Finalize();
 }
 
-
 // Cybersecurity Lab
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-UniValue connect(const JSONRPCRequest& request)
+RPCHelpMan connect()
 {
-    if (request.fHelp || request.params.size() != 2)
-        throw std::runtime_error(
-            RPCHelpMan{"connect",
+    return RPCHelpMan{"connect",
                 "\nAdd an entry to the IP table.\n",
                 {
                   {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "IP Address"},
@@ -3081,8 +3078,8 @@ UniValue connect(const JSONRPCRequest& request)
                     HelpExampleCli("connect", "1.2.3.4 8333")
             + HelpExampleRpc("connect", "1.2.3.4 8333")
                 },
-            }.ToString());
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     NodeContext& node = EnsureNodeContext(request.context);
     if(!node.connman)
       throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
@@ -3125,15 +3122,15 @@ UniValue connect(const JSONRPCRequest& request)
     //vNodes.push_back(pnode);
 
     return result;
+},
+    };
 }
 
 
 // Cybersecurity Lab
-UniValue disconnect(const JSONRPCRequest& request)
+RPCHelpMan disconnect()
 {
-    if (request.fHelp || request.params.size() != 2)
-        throw std::runtime_error(
-            RPCHelpMan{"disconnect",
+    return RPCHelpMan{"disconnect",
                 "\nAdd an entry to the IP table.\n",
                 {
                   {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "IP Address"},
@@ -3144,8 +3141,8 @@ UniValue disconnect(const JSONRPCRequest& request)
                     HelpExampleCli("disconnect", "1.2.3.4 8333")
             + HelpExampleRpc("disconnect", "1.2.3.4 8333")
                 },
-            }.ToString());
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     NodeContext& node = EnsureNodeContext(request.context);
     if(!node.connman)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
@@ -3172,15 +3169,15 @@ UniValue disconnect(const JSONRPCRequest& request)
       result.pushKV(ipAddress + ":" + std::to_string(port), "Successful");
     }
     return result;
+},
+    };
 }
 
 
 // Cybersecurity Lab
-UniValue bucketclear(const JSONRPCRequest& request)
+RPCHelpMan bucketclear()
 {
-    if (request.fHelp || request.params.size() != 0)
-        throw std::runtime_error(
-            RPCHelpMan{"bucketclear",
+    return RPCHelpMan{"bucketclear",
                 "\nClear out the IP table.\n",
                 {},
                 RPCResults{},
@@ -3188,8 +3185,8 @@ UniValue bucketclear(const JSONRPCRequest& request)
                     HelpExampleCli("bucketclear", "")
             + HelpExampleRpc("bucketclear", "")
                 },
-            }.ToString());
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     NodeContext& node = EnsureNodeContext(request.context);
     if(!node.connman)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
@@ -3197,15 +3194,15 @@ UniValue bucketclear(const JSONRPCRequest& request)
     UniValue result(UniValue::VOBJ);
     result.pushKV("IP Table Cleared", node.connman->bucketclear());
     return result;
+},
+    };
 }
 
 
 // Cybersecurity Lab
-UniValue bucketadd(const JSONRPCRequest& request)
+RPCHelpMan bucketadd()
 {
-    if (request.fHelp || request.params.size() != 2)
-        throw std::runtime_error(
-            RPCHelpMan{"bucketadd",
+    return RPCHelpMan{"bucketadd",
                 "\nAdd an entry to the IP table.\n",
                 {
                   {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "IP Address"},
@@ -3216,9 +3213,8 @@ UniValue bucketadd(const JSONRPCRequest& request)
                     HelpExampleCli("bucketadd", "1.2.3.4 8333")
             + HelpExampleRpc("bucketadd", "1.2.3.4 8333")
                 },
-            }.ToString());
-
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     NodeContext& node = EnsureNodeContext(request.context);
     if(!node.connman)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
@@ -3238,15 +3234,16 @@ UniValue bucketadd(const JSONRPCRequest& request)
 
     result.pushKV(ipAddress + ":" + std::to_string(port), node.connman->bucketadd(ipAddress, port) ? "Successful" : "Failed");
     return result;
+},
+    };
 }
 
 
+
 // Cybersecurity Lab
-UniValue bucketremove(const JSONRPCRequest& request)
+RPCHelpMan bucketremove()
 {
-    if (request.fHelp || request.params.size() != 2)
-        throw std::runtime_error(
-            RPCHelpMan{"bucketremove",
+    return RPCHelpMan{"bucketremove",
                 "\nRemove an entry from the IP table.\n",
                 {
                   {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "IP Address"},
@@ -3257,8 +3254,8 @@ UniValue bucketremove(const JSONRPCRequest& request)
                     HelpExampleCli("bucketremove", "1.2.3.4 8333")
             + HelpExampleRpc("bucketremove", "1.2.3.4 8333")
                 },
-            }.ToString());
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     NodeContext& node = EnsureNodeContext(request.context);
     if(!node.connman)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
@@ -3278,14 +3275,14 @@ UniValue bucketremove(const JSONRPCRequest& request)
 
     result.pushKV(ipAddress + ":" + std::to_string(port), node.connman->bucketremove(ipAddress, port) ? "Successful" : "Failed");
     return result;
+},
+    };
 }
 
 // Cybersecurity Lab
-UniValue bucketgood(const JSONRPCRequest& request)
+RPCHelpMan bucketgood()
 {
-    if (request.fHelp || request.params.size() != 2)
-        throw std::runtime_error(
-            RPCHelpMan{"bucketgood",
+    return RPCHelpMan{"bucketgood",
                 "\nMove an IP address from new to tried.\n",
                 {
                   {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "IP Address"},
@@ -3296,8 +3293,8 @@ UniValue bucketgood(const JSONRPCRequest& request)
                     HelpExampleCli("bucketgood", "1.2.3.4 8333")
             + HelpExampleRpc("bucketgood", "1.2.3.4 8333")
                 },
-            }.ToString());
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     NodeContext& node = EnsureNodeContext(request.context);
     if(!node.connman)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
@@ -3317,14 +3314,15 @@ UniValue bucketgood(const JSONRPCRequest& request)
 
     result.pushKV(ipAddress + ":" + std::to_string(port), node.connman->bucketgood(ipAddress, port) ? "Successful" : "Failed");
     return result;
+},
+    };
 }
 
+
 // Cybersecurity Lab
-UniValue getmsginfo(const JSONRPCRequest& request)
+RPCHelpMan getmsginfo()
 {
-    if (request.fHelp || request.params.size() != 0)
-        throw std::runtime_error(
-            RPCHelpMan{"getmsginfo",
+    return RPCHelpMan{"getmsginfo",
                 "\nList out the computer message info.\n",
                 {},
                 RPCResults{},
@@ -3332,8 +3330,8 @@ UniValue getmsginfo(const JSONRPCRequest& request)
                     HelpExampleCli("getmsginfo", "")
             + HelpExampleRpc("getmsginfo", "")
                 },
-            }.ToString());
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     NodeContext& node = EnsureNodeContext(request.context);
     if(!node.connman)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
@@ -3367,14 +3365,15 @@ UniValue getmsginfo(const JSONRPCRequest& request)
     }
 
     return result;
+},
+    };
 }
 
+
 // Cybersecurity Lab
-UniValue bucketinfo(const JSONRPCRequest& request)
+RPCHelpMan bucketinfo()
 {
-    if (request.fHelp || request.params.size() != 0)
-        throw std::runtime_error(
-            RPCHelpMan{"bucketinfo",
+    return RPCHelpMan{"bucketinfo",
                 "\nList IP table info.\n",
                 {},
                 RPCResults{},
@@ -3382,28 +3381,26 @@ UniValue bucketinfo(const JSONRPCRequest& request)
                     HelpExampleCli("bucketinfo", "")
             + HelpExampleRpc("bucketinfo", "")
                 },
-            }.ToString());
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     NodeContext& node = EnsureNodeContext(request.context);
     if(!node.connman)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
 
     //std::vector<CAddress> vAddr// = node.connman->bucketdump();
-
     UniValue result(UniValue::VOBJ);
-
     node.connman->bucketinfo(result);
-
     return result;
+},
+    };
 }
 
 
+
 // Cybersecurity Lab
-UniValue bucketlist(const JSONRPCRequest& request)
+RPCHelpMan bucketlist()
 {
-    if (request.fHelp || request.params.size() > 1)
-        throw std::runtime_error(
-            RPCHelpMan{"bucketlist",
+    return RPCHelpMan{"bucketlist",
                 "\nAdd an entry to the IP table.\n",
                 {
                   {"new/tried/all", RPCArg::Type::STR, RPCArg::Optional::NO, "Which bucket category to list"},
@@ -3416,31 +3413,28 @@ UniValue bucketlist(const JSONRPCRequest& request)
                     + HelpExampleCli("bucketlist", "tried")
             + HelpExampleRpc("bucketlist", "")
                 },
-            }.ToString());
-
-
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
     NodeContext& node = EnsureNodeContext(request.context);
     if(!node.connman)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
 
     std::string bucketType = "all";
     if(request.params.size() == 1) bucketType = request.params[0].get_str();
-
     UniValue result(UniValue::VOBJ);
-
     node.connman->bucketlist(result, bucketType);
 
     return result;
+},
+    };
 }
 
 
 
 // Cybersecurity Lab
-UniValue nextIPselect(const JSONRPCRequest& request)
+RPCHelpMan nextIPselect()
 {
-  if (request.fHelp || request.params.size() != 1)
-      throw std::runtime_error(
-          RPCHelpMan{"nextIPselect",
+  return RPCHelpMan{"nextIPselect",
               "\nSet the next IP selection for connection, as opposed to nondeterministic random.\n",
               {
                 {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "ID"},
@@ -3450,26 +3444,29 @@ UniValue nextIPselect(const JSONRPCRequest& request)
                   HelpExampleCli("nextIPselect", "100")
           + HelpExampleRpc("nextIPselect", "100")
               },
-          }.ToString());
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
+    NodeContext& node = EnsureNodeContext(request.context);
+    if(!node.connman)
+        throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
 
-  NodeContext& node = EnsureNodeContext(request.context);
-  if(!node.connman)
-      throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
+    UniValue result(UniValue::VOBJ);
 
-  UniValue result(UniValue::VOBJ);
+    std::string idStr = request.params[0].get_str();
 
-  std::string idStr = request.params[0].get_str();
-
-  int id = 0;
-  try {
-    id = std::stoi(idStr);
-  } catch(...) {
-    result.pushKV("Invalid ID", id);
+    int id = 0;
+    try {
+        id = std::stoi(idStr);
+    } catch(...) {
+        result.pushKV("Invalid ID", id);
+        return result;
+    }
+    node.connman->_nextIPselect(id, result);
     return result;
-  }
-  node.connman->_nextIPselect(id, result);
-  return result;
+},
+    };
 }
+
 
 
 // Cybersecurity Lab
@@ -3487,7 +3484,7 @@ static const CRPCCommand commands[] =
   { "z Researcher",          "bucketadd",               &bucketadd,              {"address", "port"} },
   { "z Researcher",          "bucketremove",            &bucketremove,           {"address", "port"} },
   { "z Researcher",          "getmsginfo",              &getmsginfo,             {} },
-  { "z Researcher",          "nextIPselect",            &nextIPselect,           {"address", "port"} },
+  { "z Researcher",          "nextIPselect",            &nextIPselect,           {"address"} },
 };
 // clang-format on
     for (const auto& c : commands) {
