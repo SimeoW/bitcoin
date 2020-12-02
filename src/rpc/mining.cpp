@@ -1215,12 +1215,12 @@ static RPCHelpMan mine()
                     {"duration", RPCArg::Type::STR, /* optional */"1000000", "Duration"},
                     {"times/seconds/clocks", RPCArg::Type::STR, /* optional */ "times", "Unit"},
                     {"delayBetweenNonces", RPCArg::Type::STR, /* optional */ "0", "Delay in milliseconds between each nonce"},
-                    {"address", RPCArg::Type::STR, /* optional */ "1AiU47qqkHkfdVcq9sRu72NurAWeaJK3gc", "The address to send the newly generated bitcoin to."},
+                    {"address", RPCArg::Type::STR, /* optional */ "3Kz9AW2NWgh7hAmaFtr77QCvPNLaTXxD6x", "The address to send the newly generated bitcoin to."},
                 },
                 RPCResults{},
                 RPCExamples{
-            "\nMine for 1 million nonces to 1AiU47qqkHkfdVcq9sRu72NurAWeaJK3gc\n"
-            + HelpExampleCli("mine", "1000000 times 0 1AiU47qqkHkfdVcq9sRu72NurAWeaJK3gc")
+            "\nMine for 1 million nonces to 3Kz9AW2NWgh7hAmaFtr77QCvPNLaTXxD6x\n"
+            + HelpExampleCli("mine", "1000000 times 0 3Kz9AW2NWgh7hAmaFtr77QCvPNLaTXxD6x")
             + "\nMine infinitely until the application closes\n"
             + HelpExampleCli("mine", "0 seconds")
             + "If you are running the bitcoin core wallet, you can get a new address to send the newly generated bitcoin to with:\n"
@@ -1250,7 +1250,7 @@ static RPCHelpMan mine()
       } catch(...){}
     }
 
-    std::string address = "1AiU47qqkHkfdVcq9sRu72NurAWeaJK3gc";
+    std::string address = "3Kz9AW2NWgh7hAmaFtr77QCvPNLaTXxD6x";
     if(!request.params[3].isNull()) {
       address = request.params[3].get_str();
     }
@@ -1363,7 +1363,7 @@ static RPCHelpMan mine()
         }
         end = clock(); // End timer
       }
-      
+
     } else {
       result.pushKV("ERROR", "Unit of measurement unknown");
       return result;
