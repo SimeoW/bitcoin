@@ -1503,6 +1503,51 @@ static RPCHelpMan log()
     };
 }
 
+/*
+// Cybersecurity lab
+static RPCHelpMan dropall()
+{
+    return RPCHelpMan{"dropall",
+                "\nDisconnect from all connections.\n",
+                {},
+                RPCResult{},
+                RPCExamples{
+                    HelpExampleCli("dropall", "")
+            + HelpExampleRpc("dropall", "")
+                },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
+    NodeContext& node = EnsureNodeContext(request.context);
+    if(!node.connman)
+        throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
+
+    std::vector<CNodeStats> vstats;
+    node.connman->GetNodeStats(vstats);
+
+    UniValue result(UniValue::VOBJ);
+    for (const CNodeStats& stats : vstats) {
+        CNodeStateStats statestats;
+        bool fStateStats = GetNodeStateStats(stats.nodeid, statestats);
+        if (fStateStats) {
+            result.pushKV(stats.addrName, statestats.m_misbehavior_score);
+
+
+            bool success = node.connman->DisconnectNode(ipAddress + ":" + std::to_string(port));
+
+            if(!success) {
+            result.pushKV(ipAddress + ":" + std::to_string(port), "Failed");
+            return result;
+            } else {
+            result.pushKV(ipAddress + ":" + std::to_string(port), "Successful");
+            }
+        }
+    }
+
+    return result;
+},
+    };
+}
+*/
 
 // Cybersecurity Lab
 void RegisterNetRPCCommands(CRPCTable &t)
@@ -1531,6 +1576,7 @@ static const CRPCCommand commands[] =
     { "z Researcher",       "count",                  &count,                  {} },
     { "z Researcher",       "log",                    &log,                    {"category"} },
     { "z Researcher",       "forcerealfake",          &forcerealfake,          {"numReal", "numFake"} },
+    //{ "z Researcher",       "dropall",                &dropall,                {} },
 };
 // clang-format on
     for (const auto& c : commands) {
