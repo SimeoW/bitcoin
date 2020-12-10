@@ -5,7 +5,7 @@ import psutil
 import time
 
 
-openssl_dir = '.'
+openssl_dir = '../..'
 
 def header():
 	line = 'Timestamp,'
