@@ -5,7 +5,7 @@ import psutil
 import time
 
 
-openssl_dir = '/home/pi/openssl'
+openssl_dir = '.'
 
 def header():
 	line = 'Timestamp,'
@@ -42,7 +42,7 @@ def run(file):
 		while True:
 			count += 1
 			log(file)
-			if count % 200 == 0:
+			if count % 10 == 0:
 				print(f'Logged {count / 2} seconds')
 			time.sleep(0.5)
 	except KeyboardInterrupt:
