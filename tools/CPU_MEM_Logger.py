@@ -42,13 +42,13 @@ def run(file):
 		while True:
 			count += 1
 			log(file)
-			if count % 200 == 0:
+			if count % 10 == 0:
 				print(f'Logged {count / 2} seconds')
 			time.sleep(0.5)
 	except KeyboardInterrupt:
 		pass
 
-fileName = 'LOGGED_CPU_OPENSSL.csv'
+fileName = 'LOGGED_CPU.csv'
 file = open(fileName, 'w+')
 file.write(header() + '\n')
 run(file)
