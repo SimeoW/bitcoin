@@ -70,12 +70,7 @@ for i, address in enumerate(addresses):
 		except:
 			pass
 	else:
-		print(f'Latency for {ip}:{port} already exists.')
-
-	#params = {'address': 'University of Colorado, Colorado Springs'}
-	#r = requests.get(url = url, params = params)
-	#data = r.json()
-	
+		print(f'Latency for {ip}:{port} already cached.')
 
 
 
